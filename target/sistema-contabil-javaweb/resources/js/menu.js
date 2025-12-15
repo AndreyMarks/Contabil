@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const logoutBtn = document.getElementById('logoutBtn');
 
     logoutBtn.addEventListener('click', function() {
+        // Requisição AJAX para o Servlet de Autenticação para fazer logout
         fetch('AuthServlet', {
             method: 'POST',
             headers: {

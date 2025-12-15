@@ -19,7 +19,7 @@ public class SecurityFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        HttpSession session = req.getSession(false); // Não cria nova sessão se não existir
+        HttpSession session = req.getSession(false);
 
         String loginURI = req.getContextPath() + "/login.jsp";
         String authServletURI = req.getContextPath() + "/AuthServlet";

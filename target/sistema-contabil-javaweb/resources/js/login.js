@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttonText = document.getElementById('btn-text');
     const spinner = document.getElementById('spinner');
 
+    // Função para gerenciar o estado do botão de login
     function setLoginButtonState(isLoading) {
         if (isLoading) {
             loginButton.classList.add('loading');
@@ -19,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Função para mostrar mensagens de status
     function mostrarMensagem(texto, tipo) {
         mensagemDiv.textContent = texto;
         mensagemDiv.className = `mensagem ${tipo}`;
@@ -29,7 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     }
 
-  
+    // Verifica se o usuário já está logado (redirecionamento será feito pelo Servlet/JSP)
+    // A lógica de verificação de sessão será movida para o backend (Servlet/JSP)
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -42,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        setLoginButtonState(true); 
+        setLoginButtonState(true); // Inicia o carregamento
 
         // Requisição AJAX para o Servlet de Autenticação
         fetch('AuthServlet', {
@@ -56,8 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.status === 'success') {
                 if (data.requires2FA) {
+                    // Se precisar de 2FA, redireciona para a página de 2FA
                     window.location.href = 'twoFactor.jsp';
                 } else {
+                    // Login direto (se 2FA não for necessário)
                     mostrarMensagem('Login bem-sucedido! Redirecionando...', 'sucesso');
                     setTimeout(() => {
                         window.location.href = 'menu.jsp';
@@ -65,11 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else {
                 mostrarMensagem(data.message || 'Erro de autenticação!', 'erro');
-                setLoginButtonState(false); 
+                setLoginButtonState(false); // Finaliza o carregamento em caso de erro de autenticação
             }
         })
         .catch(error => {
             console.error('Erro na requisição:', error);
             mostrarMensagem('Erro de comunicação com o servidor.', 'erro');
-            setLoginButtonState(false); 
+            setLoginButtonState(false); // Finaliza o carregamento em caso de erro de comunicação
         });
