@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    console.log("login.js carregado"); // teste
+    console.log("login.js carregado");
 
     const loginForm = document.getElementById('loginForm');
     const mensagemDiv = document.getElementById('mensagem');
@@ -20,8 +20,14 @@ document.addEventListener('DOMContentLoaded', function () {
         mensagemDiv.style.display = 'block';
     }
 
+    if (!loginForm) {
+        console.error("Form loginForm não encontrado");
+        return;
+    }
+
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        console.log("SUBMIT INTERCEPTADO");
 
         const usuario = document.getElementById('usuario').value.trim();
         const senha = document.getElementById('senha').value.trim();
@@ -43,13 +49,11 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-
                 if (data.requires2FA) {
                     window.location.href = CONTEXT_PATH + '/twoFactor.jsp';
                 } else {
                     window.location.href = CONTEXT_PATH + '/menu.jsp';
                 }
-
             } else {
                 mostrarMensagem(data.message || 'Erro de autenticação', 'erro');
                 setLoginButtonState(false);
@@ -61,4 +65,5 @@ document.addEventListener('DOMContentLoaded', function () {
             setLoginButtonState(false);
         });
     });
+
 });
