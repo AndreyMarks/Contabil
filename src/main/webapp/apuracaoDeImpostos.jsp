@@ -1,26 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Apuração de Impostos</title>
-    <link rel="stylesheet" href="resources/css/consolidated_styles.css">
+  <link rel="stylesheet" href="resources/css/consolidated_styles.css">
 </head>
 <body>
-
-<%
-  class Imposto {
-    String nome, aliquota, base, valor, status;
-    Imposto(String n, String a, String b, String v, String s) {
-      nome=n; aliquota=a; base=b; valor=v; status=s;
-    }
-  }
-  java.util.List<Imposto> impostos = new java.util.ArrayList<>();
-  impostos.add(new Imposto("ICMS","18%","R$ 50.000","R$ 9.000","Pendente"));
-  impostos.add(new Imposto("PIS","1,65%","R$ 50.000","R$ 825","Pago"));
-  request.setAttribute("impostos", impostos);
-%>
 
 <header>
   <h1>Apuração de Impostos</h1>
@@ -63,7 +51,9 @@
             <td>${i.aliquota}</td>
             <td>${i.base}</td>
             <td>${i.valor}</td>
-            <td class="${i.status == 'Pago' ? 'pago' : 'pendente'}">${i.status}</td>
+            <td class="${i.status == 'Pago' ? 'pago' : 'pendente'}">
+              ${i.status}
+            </td>
           </tr>
         </c:forEach>
       </tbody>
