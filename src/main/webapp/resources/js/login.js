@@ -1,7 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
-
-    console.log("login.js carregado");
-
+document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const mensagemDiv = document.getElementById('mensagem');
     const loginButton = document.getElementById('btn-login');
@@ -9,40 +6,46 @@ document.addEventListener('DOMContentLoaded', function () {
     const spinner = document.getElementById('spinner');
 
     function setLoginButtonState(isLoading) {
-        loginButton.disabled = isLoading;
-        buttonText.style.display = isLoading ? 'none' : 'inline';
-        spinner.style.display = isLoading ? 'inline-block' : 'none';
+        if (isLoading) {
+            loginButton.classList.add('loading');
+            buttonText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            loginButton.disabled = true;
+        } else {
+            loginButton.classList.remove('loading');
+            buttonText.style.display = 'inline';
+            spinner.style.display = 'none';
+            loginButton.disabled = false;
+        }
     }
 
     function mostrarMensagem(texto, tipo) {
         mensagemDiv.textContent = texto;
         mensagemDiv.className = `mensagem ${tipo}`;
         mensagemDiv.style.display = 'block';
+
+        setTimeout(() => {
+            mensagemDiv.style.display = 'none';
+        }, 5000);
     }
 
-    if (!loginForm) {
-        console.error("Form loginForm não encontrado");
-        return;
-    }
-
-    loginForm.addEventListener('submit', function (e) {
+    loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log("SUBMIT INTERCEPTADO");
 
-        const usuario = document.getElementById('usuario').value.trim();
-        const senha = document.getElementById('senha').value.trim();
+        const usuario = document.getElementById('usuario').value;
+        const senha = document.getElementById('senha').value;
 
         if (!usuario || !senha) {
-            mostrarMensagem('Preencha todos os campos.', 'erro');
+            mostrarMensagem('Por favor, preencha todos os campos.', 'erro');
             return;
         }
 
         setLoginButtonState(true);
 
-        fetch(CONTEXT_PATH + '/AuthServlet', {
+        fetch('AuthServlet', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: `action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`
         })
@@ -50,20 +53,23 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.status === 'success') {
                 if (data.requires2FA) {
-                    window.location.href = CONTEXT_PATH + '/twoFactor.jsp';
+                    window.location.href = 'twoFactor.jsp';
                 } else {
-                    window.location.href = CONTEXT_PATH + '/menu.jsp';
+                    mostrarMensagem('Login bem-sucedido! Redirecionando...', 'sucesso');
+                    setTimeout(() => {
+                        window.location.href = 'menu.jsp';
+                    }, 1500);
                 }
             } else {
-                mostrarMensagem(data.message || 'Erro de autenticação', 'erro');
+                mostrarMensagem(data.message || 'Erro de autenticação!', 'erro');
                 setLoginButtonState(false);
             }
         })
-        .catch(err => {
-            console.error(err);
-            mostrarMensagem('Erro ao comunicar com o servidor.', 'erro');
+        .catch(error => {
+            console.error('Erro na requisição:', error);
+            mostrarMensagem('Erro de comunicação com o servidor.', 'erro');
             setLoginButtonState(false);
         });
     });
 
-});
+}); 
