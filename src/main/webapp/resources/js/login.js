@@ -21,12 +21,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function mostrarMensagem(texto, tipo) {
         mensagemDiv.textContent = texto;
-        mensagemDiv.className = `mensagem ${tipo}`;
+        mensagemDiv.className = 'mensagem ' + tipo;
         mensagemDiv.style.display = 'block';
 
-        setTimeout(() => {
+        setTimeout(function() {
             mensagemDiv.style.display = 'none';
         }, 5000);
+    }
+
+    if (!loginForm) {
+        console.error('loginForm não encontrado');
+        return;
     }
 
     loginForm.addEventListener('submit', function(e) {
@@ -45,18 +50,21 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('AuthServlet', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`
+            body: 'action=login&usuario=' + encodeURIComponent(usuario) +
+                  '&senha=' + encodeURIComponent(senha)
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
             if (data.status === 'success') {
                 if (data.requires2FA) {
                     window.location.href = 'twoFactor.jsp';
                 } else {
                     mostrarMensagem('Login bem-sucedido! Redirecionando...', 'sucesso');
-                    setTimeout(() => {
+                    setTimeout(function() {
                         window.location.href = 'menu.jsp';
                     }, 1500);
                 }
@@ -65,11 +73,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 setLoginButtonState(false);
             }
         })
-        .catch(error => {
+        .catch(function(error) {
             console.error('Erro na requisição:', error);
             mostrarMensagem('Erro de comunicação com o servidor.', 'erro');
             setLoginButtonState(false);
         });
     });
 
-}); 
+});

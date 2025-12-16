@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const buttonText = document.getElementById('btn-text');
     const spinner = document.getElementById('spinner');
 
-    // Função para gerenciar o estado do botão de login
     function setLoginButtonState(isLoading) {
         if (isLoading) {
             loginButton.classList.add('loading');
@@ -20,61 +19,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Função para mostrar mensagens de status
     function mostrarMensagem(texto, tipo) {
         mensagemDiv.textContent = texto;
-        mensagemDiv.className = `mensagem ${tipo}`;
+        mensagemDiv.className = 'mensagem ' + tipo;
         mensagemDiv.style.display = 'block';
-        
-        setTimeout(() => {
+
+        setTimeout(function() {
             mensagemDiv.style.display = 'none';
         }, 5000);
     }
 
-    // Verifica se o usuário já está logado (redirecionamento será feito pelo Servlet/JSP)
-    // A lógica de verificação de sessão será movida para o backend (Servlet/JSP)
+    if (!loginForm) {
+        console.error('loginForm não encontrado');
+        return;
+    }
 
     loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const usuario = document.getElementById('usuario').value;
         const senha = document.getElementById('senha').value;
-        
+
         if (!usuario || !senha) {
             mostrarMensagem('Por favor, preencha todos os campos.', 'erro');
             return;
         }
 
-        setLoginButtonState(true); // Inicia o carregamento
+        setLoginButtonState(true);
 
-        // Requisição AJAX para o Servlet de Autenticação
         fetch('AuthServlet', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `action=login&usuario=${encodeURIComponent(usuario)}&senha=${encodeURIComponent(senha)}`
+            body: 'action=login&usuario=' + encodeURIComponent(usuario) +
+                  '&senha=' + encodeURIComponent(senha)
         })
-        .then(response => response.json())
-        .then(data => {
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
             if (data.status === 'success') {
                 if (data.requires2FA) {
-                    // Se precisar de 2FA, redireciona para a página de 2FA
                     window.location.href = 'twoFactor.jsp';
                 } else {
-                    // Login direto (se 2FA não for necessário)
                     mostrarMensagem('Login bem-sucedido! Redirecionando...', 'sucesso');
-                    setTimeout(() => {
+                    setTimeout(function() {
                         window.location.href = 'menu.jsp';
                     }, 1500);
                 }
             } else {
                 mostrarMensagem(data.message || 'Erro de autenticação!', 'erro');
-                setLoginButtonState(false); // Finaliza o carregamento em caso de erro de autenticação
+                setLoginButtonState(false);
             }
         })
-        .catch(error => {
+        .catch(function(error) {
             console.error('Erro na requisição:', error);
             mostrarMensagem('Erro de comunicação com o servidor.', 'erro');
-            setLoginButtonState(false); // Finaliza o carregamento em caso de erro de comunicação
+            setLoginButtonState(false);
         });
+    });
+
+});
