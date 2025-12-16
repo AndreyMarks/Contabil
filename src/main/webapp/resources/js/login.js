@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         setLoginButtonState(true);
 
-        fetch('AuthServlet', {
+        fetch(CONTEXT_PATH + '/AuthServlet', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'

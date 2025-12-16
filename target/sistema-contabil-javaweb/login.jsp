@@ -38,7 +38,7 @@
     const CONTEXT_PATH = "<%= request.getContextPath() %>";
 </script>
 
-
 <script src="<%= request.getContextPath() %>/resources/js/login.js"></script>
+
 </body>
 </html>
